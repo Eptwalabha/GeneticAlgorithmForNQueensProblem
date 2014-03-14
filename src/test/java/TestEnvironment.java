@@ -3,7 +3,6 @@ import eightqueens.EightQueensEnvironment;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -20,34 +19,44 @@ public class TestEnvironment {
 
     @Before
     public void setUp() {
-        eightQueensEnvironment = new EightQueensEnvironment(20);
+        eightQueensEnvironment = new EightQueensEnvironment(8);
     }
 
     @Test
     public void canCorrectTheInitialPopulationAmountToBeMultipleOfFour() {
-        eightQueensEnvironment = new EightQueensEnvironment(13);
+        eightQueensEnvironment = new EightQueensEnvironment(8, 13);
         assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(16);
     }
 
     @Test
-    public void canCreateAnEmptyEnvironment() {
-        eightQueensEnvironment = new EightQueensEnvironment();
+    public void canCreateABasicEnvironment() {
         assertThat(eightQueensEnvironment.getGenerationNumber()).isEqualTo(0);
-        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(12);
+    }
+
+    @Test
+    public void canPopulateAnEnvironmentBasedOnTheBoardSize() {
+        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(64);
+    }
+
+    @Test
+    public void cannotCreateABoardShorterThan4() {
+        eightQueensEnvironment = new EightQueensEnvironment(1);
+        assertThat(eightQueensEnvironment.getCurrentPopulation().get(0).getDNALength()).isEqualTo(4);
     }
 
     @Test
     public void canPopulateAGeneration() {
         assertThat(eightQueensEnvironment.getGenerationNumber()).isEqualTo(0);
-        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(20);
+        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(64);
     }
 
     @Test
     public void canReturnPopulationOfCurrentGeneration() {
-        eightQueensEnvironment = new EightQueensEnvironment(200);
+        eightQueensEnvironment = new EightQueensEnvironment(12, 200);
         List<ChessBoard> chessBoards = eightQueensEnvironment.getCurrentPopulation();
         assertThat(chessBoards.size()).isEqualTo(200);
         assertThat(chessBoards.get(0)).isNotNull();
+        assertThat(chessBoards.get(0).getDNA().length).isEqualTo(12);
         assertThat(chessBoards.get(0).getStringDNA()).isNotNull();
         assertThat(chessBoards.get(0).getStringDNA()).isNotEqualTo(chessBoards.get(1).getStringDNA());
     }
@@ -75,23 +84,35 @@ public class TestEnvironment {
     @Test
     public void canProcessToNextGeneration() {
 
-        int numberOfEntities = 252;
-        eightQueensEnvironment = new EightQueensEnvironment(numberOfEntities);
+        eightQueensEnvironment = new EightQueensEnvironment(8, 200);
         assertThat(eightQueensEnvironment.getGenerationNumber()).isEqualTo(0);
-        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(numberOfEntities);
+        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(200);
 
         eightQueensEnvironment.processToNextGeneration();
 
         assertThat(eightQueensEnvironment.getGenerationNumber()).isEqualTo(1);
-        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(numberOfEntities);
+        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(200);
 
-        int numberOfGeneration = 30;
-        for (int i = 1; i < numberOfGeneration; i++) {
-            eightQueensEnvironment.processNGeneration(10);
-            assertThat(eightQueensEnvironment.getGenerationNumber()).isEqualTo(i * 10 + 1);
-            assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(numberOfEntities);
-        }
     }
 
+    @Test
+    public void canProcessNGeneration() {
+
+        eightQueensEnvironment = new EightQueensEnvironment(100, 12);
+
+        eightQueensEnvironment.processNGeneration(10);
+
+        assertThat(eightQueensEnvironment.getGenerationNumber()).isEqualTo(10);
+        assertThat(eightQueensEnvironment.getCurrentPopulationSize()).isEqualTo(12);
+    }
+
+    @Test
+    public void canStopWhenAPerfectBoardIsFound() {
+        eightQueensEnvironment = new EightQueensEnvironment(6, 52);
+
+        eightQueensEnvironment.processNGeneration(10000);
+        assertThat(eightQueensEnvironment.getGenerationNumber()).isLessThan(10000);
+
+    }
 
 }

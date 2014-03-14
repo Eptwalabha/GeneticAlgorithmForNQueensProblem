@@ -18,4 +18,6 @@ public interface Evolving <T> extends Comparable<ChessBoard> {
     int[] getDNA();
     String getStringDNA();
     int getDNALength();
+
+    float determineFitness();
 }

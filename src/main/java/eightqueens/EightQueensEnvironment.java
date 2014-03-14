@@ -14,13 +14,16 @@ public class EightQueensEnvironment {
     private int generationNumber;
     private List<ChessBoard> currentPopulation;
 
-    public EightQueensEnvironment() {
-        this(12);
+    public EightQueensEnvironment(int boardSize) {
+        this(boardSize, boardSize * boardSize);
     }
 
-    public EightQueensEnvironment(int populationSize) {
+    public EightQueensEnvironment(int boardSize, int populationSize) {
+        if (boardSize < 4)
+            boardSize = 4;
+
         currentPopulation = new ArrayList<ChessBoard>(populationSize);
-        initialize(populationSize, 20);
+        initialize(populationSize, boardSize);
         generationNumber = -1;
         processToNextGeneration();
     }
@@ -92,8 +95,12 @@ public class EightQueensEnvironment {
     }
 
     public void processNGeneration(int numberOfGenerationToProcess) {
-        for (int i = 0; i < numberOfGenerationToProcess; i++)
+
+        int counter = 0;
+        while (currentPopulation.get(0).getFitness() != 1 && counter < numberOfGenerationToProcess) {
             processToNextGeneration();
+            counter++;
+        }
 
         System.out.println("best fitness for generation " + generationNumber + " : " + currentPopulation.get(0).getFitness() + " disposition = " + currentPopulation.get(0).getStringDNA());
 

@@ -14,6 +14,7 @@ public class ChessBoard implements Evolving<ChessBoard> {
 
     private int boardLength;
     private int[] dna;
+    private float fitnessScore;
 
     public ChessBoard(int boardLength) {
         this.boardLength = (boardLength > 3) ? boardLength : 8;
@@ -36,6 +37,7 @@ public class ChessBoard implements Evolving<ChessBoard> {
         column = normalize(column);
         row = normalize(row);
         dna[column] = row;
+        fitnessScore = determineFitness();
     }
 
     public int retrieveQueenPosition(int column) {
@@ -90,6 +92,8 @@ public class ChessBoard implements Evolving<ChessBoard> {
             for (int i = 0; i < boardLength; i++)
                 dna[i] = dna2.get(i);
         } while (Arrays.equals(dna, initialDNA));
+
+        fitnessScore = determineFitness();
     }
 
     @Override
@@ -101,6 +105,7 @@ public class ChessBoard implements Evolving<ChessBoard> {
         for (int i = 0; i < boardLength; i++)
             this.dna[i] = (i < newDNASize && dna[i] > 0 && dna[i] < boardLength) ? dna[i] : 0;
 
+        fitnessScore = determineFitness();
     }
 
     @Override
@@ -123,6 +128,8 @@ public class ChessBoard implements Evolving<ChessBoard> {
         do {
             dna[((int) (Math.random() * boardLength))] = (int) (Math.random() * boardLength);
         } while (Arrays.equals(initialGenome, dna));
+
+        fitnessScore = determineFitness();
     }
 
     @Override
@@ -150,12 +157,17 @@ public class ChessBoard implements Evolving<ChessBoard> {
 
     @Override
     public float getFitness() {
+        return fitnessScore;
+    }
+
+    @Override
+    public float determineFitness() {
         return 1f - getNumberOfThreats() / (float) (boardLength * (boardLength - 1));
     }
 
     @Override
     public int compareTo(ChessBoard chessBoard) {
-        float delta = chessBoard.getFitness() - getFitness();
+        float delta = chessBoard.fitnessScore - fitnessScore;
         return (delta < 0) ? -1 : (delta == 0) ? 0 : 1;
     }
 }
