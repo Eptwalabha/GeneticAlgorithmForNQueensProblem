@@ -108,7 +108,7 @@ public class TestEnvironment {
 
     @Test
     public void canStopWhenAPerfectBoardIsFound() {
-        eightQueensEnvironment = new EightQueensEnvironment(6, 52);
+        eightQueensEnvironment = new EightQueensEnvironment(8, 52);
 
         eightQueensEnvironment.processNGeneration(10000);
         assertThat(eightQueensEnvironment.getGenerationNumber()).isLessThan(10000);
